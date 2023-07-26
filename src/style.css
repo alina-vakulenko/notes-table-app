@@ -40,9 +40,15 @@ tr {
   background-color: #e8eaf5;
 }
 
+.btn-action {
+  border: none;
+  background: none;
+}
+
 .btn-add-note {
   text-align: end;
 }
+
 dialog {
   gap: 0.4rem;
   width: 450px;
@@ -68,5 +74,10 @@ dialog::backdrop {
 form {
   display: flex;
   flex-direction: column;
-  row-gap: 0.5rem;
+}
+
+input,
+select {
+  height: 2rem;
+  margin-bottom: 0.5rem;
 }

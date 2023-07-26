@@ -1,3 +1,3 @@
-export const resetForm = (formName) => {
-  document.forms[formName].reset();
+export const resetForm = (formId) => {
+  document.getElementById(formId).reset();
 };

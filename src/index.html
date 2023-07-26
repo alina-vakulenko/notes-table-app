@@ -12,6 +12,10 @@
       crossorigin="anonymous"
     />
     <link rel="stylesheet" href="style.css" />
+    <script
+      src="https://kit.fontawesome.com/81fe55f237.js"
+      crossorigin="anonymous"
+    ></script>
   </head>
   <body>
     <main>
@@ -27,24 +31,26 @@
           <button
             id="btn-close-modal"
             class="btn btn-light btn-sm btn-close-modal"
-            aria-label="Close Add Note Form Modal"
+            aria-label="Close Modal"
           >
             &times;
           </button>
-          <form name="note-form" method="dialog">
+          <form id="note-form" method="dialog">
             <label>Name</label>
-            <input data-id="name" type="text" />
+            <input name="name" type="text" autofocus />
             <label>Category</label>
-            <select data-id="category">
+            <select name="category">
               <option selected disabled hidden value="none">
                 -- Select category --
               </option>
-              <option value="task">Task</option>
-              <option value="random-thought">Random Thought</option>
-              <option value="idea">Idea</option>
+              <option>Task</option>
+              <option>Random Thought</option>
+              <option>Idea</option>
             </select>
             <label>Content</label>
-            <input data-id="content" type="text" />
+            <textarea name="content" type="text"></textarea>
+            <label>Dates</label>
+            <input name="dates" type="text" readonly />
             <button id="btn-submit" class="btn btn-dark">Save</button>
           </form>
         </dialog>

@@ -1,12 +1,6 @@
-export const getCurrentFormattedDate = () => {
-  const currentDate = new Date();
-  const options = {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  };
+export const getFormattedDate = (dateObject, options) => {
   const formattedDate = new Intl.DateTimeFormat("en-US", options).format(
-    currentDate
+    dateObject
   );
 
   return formattedDate;

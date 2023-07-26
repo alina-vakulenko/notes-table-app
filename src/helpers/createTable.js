@@ -1,9 +1,34 @@
-export const createTable = (
-  headers = [],
-  records = [],
-  caption = "",
-  id = ""
-) => {
+import { addRow } from "./addRow.js";
+
+const createTableHead = (titles, icons) => {
+  const tableHead = document.createElement("thead");
+  const headRow = document.createElement("tr");
+
+  titles.forEach((title) => {
+    const headerCell = document.createElement("th");
+    headerCell.textContent = title;
+    headRow.appendChild(headerCell);
+  });
+
+  icons.forEach((icon) => {
+    const headerCell = document.createElement("th");
+    headerCell.appendChild(icon);
+    headRow.appendChild(headerCell);
+  });
+
+  tableHead.appendChild(headRow);
+
+  return tableHead;
+};
+
+const createTable = ({
+  id,
+  titles,
+  records,
+  caption,
+  recordActions,
+  icons,
+}) => {
   const table = document.createElement("table");
 
   if (id) {
@@ -11,39 +36,19 @@ export const createTable = (
   }
 
   if (caption) {
-    const tableTitle = document.createElement("caption");
-    const captionText = document.createTextNode(caption);
-    tableTitle.appendChild(captionText);
-    table.appendChild(tableTitle);
+    const tableCaption = table.createCaption();
+    tableCaption.textContent = caption;
   }
 
-  if (headers.length > 0) {
-    const tableHead = document.createElement("thead");
-    const headerRow = document.createElement("tr");
+  const tableHead = createTableHead(titles, icons);
+  table.appendChild(tableHead);
 
-    headers.forEach((header) => {
-      const columnHeader = document.createElement("th");
-      const title = document.createTextNode(header);
-      columnHeader.appendChild(title);
-      headerRow.appendChild(columnHeader);
-    });
-
-    tableHead.appendChild(headerRow);
-    table.appendChild(tableHead);
-  }
-
-  const tableBody = document.createElement("tbody");
+  const tableBody = table.createTBody();
   records.forEach((record) => {
-    const row = document.createElement("tr");
-    Object.values(record).forEach((value) => {
-      const cell = document.createElement("td");
-      const cellContent = document.createTextNode(value);
-      cell.appendChild(cellContent);
-      row.appendChild(cell);
-    });
-    tableBody.appendChild(row);
+    addRow(record, recordActions, tableBody);
   });
-  table.appendChild(tableBody);
 
   return table;
 };
+
+export { createTable };
