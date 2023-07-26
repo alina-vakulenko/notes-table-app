@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notes</title>
+    <link rel="shortcut icon" href="#" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main>
+      <div class="app-wrapper">
+        <section
+          id="notes-table-container"
+          class="notes-table-container"
+        ></section>
+        <button id="btn-add-note" class="btn btn-dark btn-add-note">
+          Add note
+        </button>
+        <dialog>
+          <button
+            id="btn-close-modal"
+            class="btn btn-light btn-sm btn-close-modal"
+            aria-label="Close Add Note Form Modal"
+          >
+            &times;
+          </button>
+          <form name="note-form" method="dialog">
+            <label>Name</label>
+            <input data-id="name" type="text" />
+            <label>Category</label>
+            <select data-id="category">
+              <option selected disabled hidden value="none">
+                -- Select category --
+              </option>
+              <option value="task">Task</option>
+              <option value="random-thought">Random Thought</option>
+              <option value="idea">Idea</option>
+            </select>
+            <label>Content</label>
+            <input data-id="content" type="text" />
+            <button id="btn-submit" class="btn btn-dark">Save</button>
+          </form>
+        </dialog>
+      </div>
+    </main>
+    <script src="main.js" type="module"></script>
+  </body>
+</html>
