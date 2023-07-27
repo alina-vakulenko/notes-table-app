@@ -1,9 +1,7 @@
-import { renderNotesTable, renderSummaryTable } from "./notesTable.js";
-import { openCreateModal } from "./dialog.js";
+import { renderNotesTable } from "./notesTable.js";
+import { renderSummaryTable } from "./summaryTable.js";
+import { renderArchiveTable } from "./archiveTable.js";
 
 renderNotesTable();
 renderSummaryTable();
-
-const addNoteBtn = document.querySelector("#btn-add-note");
-
-addNoteBtn.addEventListener("click", openCreateModal);
+renderArchiveTable();

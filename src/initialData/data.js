@@ -62,6 +62,6 @@ export const notesList = [
     category: "Task",
     content: "Refactor code",
     dates: "",
-    archived: false,
+    archived: true,
   },
 ];

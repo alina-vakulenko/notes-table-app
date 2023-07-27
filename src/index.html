@@ -11,7 +11,7 @@
       integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="./styles/style.css" />
     <script
       src="https://kit.fontawesome.com/81fe55f237.js"
       crossorigin="anonymous"
@@ -20,14 +20,19 @@
   <body>
     <main>
       <div class="app-wrapper">
+        <!-- Notes table -->
         <section
           id="notes-table-container"
           class="notes-table-container"
         ></section>
+        <!-- End of notes table -->
+
         <button id="btn-add-note" class="btn btn-dark btn-add-note">
           Add note
         </button>
-        <table id="archive">
+
+        <!-- Archive table -->
+        <table id="archive" class="hidden">
           <caption>
             Archived notes
           </caption>
@@ -44,6 +49,9 @@
           </thead>
           <tbody></tbody>
         </table>
+        <!-- End of archive table -->
+
+        <!-- Summary table -->
         <table id="summary">
           <caption>
             Summary
@@ -57,6 +65,9 @@
           </thead>
           <tbody></tbody>
         </table>
+        <!-- End of summary table -->
+
+        <!-- Modal -->
         <dialog>
           <button
             id="btn-close-modal"
@@ -65,11 +76,14 @@
           >
             &times;
           </button>
-          <form id="note-form" method="dialog">
+
+          <!-- Form for adding and editing a note -->
+          <form id="note-form">
+            <p id="error-msg" class="error-msg"></p>
             <label>Name</label>
-            <input name="name" type="text" autofocus />
+            <input name="name" type="text" autofocus required />
             <label>Category</label>
-            <select name="category">
+            <select name="category" required>
               <option selected disabled hidden value="none">
                 -- Select category --
               </option>
@@ -83,7 +97,9 @@
             <input name="dates" type="text" readonly />
             <button id="btn-submit" class="btn btn-dark">Save</button>
           </form>
+          <!-- End of form -->
         </dialog>
+        <!-- End of modal -->
       </div>
     </main>
     <script src="main.js" type="module"></script>

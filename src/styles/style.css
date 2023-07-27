@@ -13,6 +13,10 @@
   margin: 0.5rem;
 }
 
+.hidden {
+  display: none;
+}
+
 table {
   border-collapse: separate;
   border-spacing: 1px 5px;
@@ -55,7 +59,9 @@ tr {
 }
 
 .btn-add-note {
+  margin-left: auto;
   margin-top: 20px;
+  margin-bottom: 30px;
 }
 
 dialog {
@@ -89,4 +95,9 @@ input,
 select {
   height: 2rem;
   margin-bottom: 0.5rem;
+}
+
+.error-msg {
+  color: red;
+  font-size: 0.8rem;
 }

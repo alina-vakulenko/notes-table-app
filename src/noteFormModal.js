@@ -1,10 +1,10 @@
-import { getFormattedDate } from "./helpers/getFormattedDate.js";
 import { parseDates } from "./helpers/parseDates.js";
 import { getNoteById, handleAddNote, handleEditNote } from "./notesTable.js";
 
 const dialog = document.querySelector("dialog");
 const closeBtn = document.querySelector("#btn-close-modal");
 const submitBtn = document.querySelector("#btn-submit");
+const addNoteBtn = document.querySelector("#btn-add-note");
 
 let currentRowIndex;
 let currentNoteId;
@@ -23,12 +23,8 @@ const getNoteFormData = () => {
   const data = {};
 
   const { nameInput, selectedCategory, contentInput } = getEditableFormFields();
+
   data["name"] = nameInput.value;
-  data["created"] = getFormattedDate(new Date(), {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
   data["category"] = selectedCategory.text;
   data["content"] = contentInput.value;
   data["dates"] = parseDates(contentInput.value, {
@@ -65,7 +61,8 @@ const openEditModal = (rowIndex, noteId) => {
   dialog.showModal();
 };
 
-const handleSubmit = () => {
+const handleSubmit = (e) => {
+  e.preventDefault();
   if (submitBtn.textContent === "Add Note") {
     handleAddNote();
   } else {
@@ -92,5 +89,6 @@ const handleClickOutside = (e) => {
 submitBtn.addEventListener("click", handleSubmit);
 closeBtn.addEventListener("click", closeModal);
 dialog.addEventListener("click", handleClickOutside);
+addNoteBtn.addEventListener("click", openCreateModal);
 
-export { openCreateModal, openEditModal, getNoteFormData };
+export { openEditModal, closeModal, getNoteFormData };

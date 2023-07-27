@@ -1,4 +1,4 @@
-import { notesHeaders, notesList } from "./data.js";
+import { notesHeaders, notesList } from "./initialData/data.js";
 import { createTable } from "./helpers/createTable.js";
 import {
   editIcon,
@@ -8,7 +8,9 @@ import {
 } from "./helpers/icons.js";
 import { addRow } from "./helpers/addRow.js";
 import { resetForm } from "./helpers/resetForm.js";
-import { getNoteFormData, openEditModal } from "./dialog.js";
+import { getFormattedDate } from "./helpers/getFormattedDate.js";
+import { getNoteFormData, openEditModal, closeModal } from "./noteFormModal.js";
+import { updateSummary } from "./summaryTable.js";
 
 let actualNotesList = [...notesList];
 
@@ -24,58 +26,64 @@ const getNotesCount = (filters) => {
   ).length;
 };
 
-const getAllCategories = () => {
-  const categories = [];
-  const select = document.querySelector('select[name="category"]');
-  [...select.options]
-    .slice(1)
-    .forEach((option) => categories.push(option.text));
-
-  return categories;
+const getArchivedNotes = () => {
+  return actualNotesList.filter((note) => note.archived);
 };
 
-const addRowToSummary = (category, activeNotesCount, archivedNotesCount) => {
-  const tBodySummary = document.querySelector("#summary tbody");
-  const newRow = tBodySummary.insertRow(-1);
-  newRow.dataset.category = category;
-  const categoryName = newRow.insertCell();
-  const activeNotes = newRow.insertCell();
-  const archivedNotes = newRow.insertCell();
-
-  categoryName.textContent = category;
-  activeNotes.textContent = activeNotesCount;
-  archivedNotes.textContent = archivedNotesCount;
+const getActiveNotes = () => {
+  return actualNotesList.filter((note) => !note.archived);
 };
 
-const updateSummary = (category) => {
-  const categoryRow = document.querySelector(
-    `#summary [data-category="${category}"]`
-  );
+const validateInputs = (inputs) => {
+  const errors = [];
 
-  const activeNotesCount = getNotesCount({
-    category: category,
-    archived: false,
-  });
-  const archivedNotesCount = getNotesCount({
-    category: category,
-    archived: true,
-  });
-
-  if (categoryRow) {
-    categoryRow.cells[1].textContent = activeNotesCount;
-    categoryRow.cells[2].textContent = archivedNotesCount;
-  } else {
-    addRowToSummary(category, activeNotesCount, archivedNotesCount);
+  if (!inputs.name) {
+    errors.push({ field: "name", message: "Name should not be empty" });
   }
+
+  if (inputs.category === "-- Select category --") {
+    errors.push({
+      field: "category",
+      message: "Category not selected",
+    });
+  }
+
+  return errors;
 };
 
 const handleAddNote = () => {
-  const newRecord = getNoteFormData();
-  actualNotesList = [...actualNotesList, { ...newRecord, archived: false }];
-  const tbody = document.querySelector("#notes-table tbody");
-  addRow(newRecord, notesTableActions, tbody);
-  updateSummary(newRecord.category);
-  resetForm("note-form");
+  const formData = getNoteFormData();
+
+  const newRecord = {
+    ...formData,
+    id: Date.now().toString(),
+    created: getFormattedDate(new Date(), {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    }),
+  };
+
+  const errors = validateInputs(newRecord);
+  const errorField = document.querySelector("#error-msg");
+
+  if (errors.length > 0) {
+    const message = errors.map((error) => error.message).join(" & ");
+    errorField.textContent = message;
+  } else {
+    errorField.textContent = "";
+    actualNotesList = [...actualNotesList, newRecord];
+
+    const tbody = document.querySelector("#notes-table tbody");
+    if (tbody.parentElement.classList.contains("hidden")) {
+      tbody.parentElement.classList.remove("hidden");
+    }
+
+    addRow(newRecord, notesTableActions, tbody);
+    updateSummary(newRecord.category);
+    resetForm("note-form");
+    closeModal();
+  }
 };
 
 const handleEditNote = (rowIndex, noteId) => {
@@ -91,43 +99,61 @@ const handleEditNote = (rowIndex, noteId) => {
   const contentField = currentRow.querySelector(
     '#notes-table [data-field="content"]'
   );
-  const datesField = currentRow.querySelector(
-    '#notes-table [data-field="dates"]'
-  );
 
-  const { name, category, content, dates } = getNoteFormData();
-  resetForm("note-form");
+  const formData = getNoteFormData();
+  const { name, category, content } = formData;
+  const errors = validateInputs(formData);
+  const errorField = document.querySelector("#error-msg");
 
-  nameField.textContent = name;
-  categoryField.textContent = category;
-  contentField.textContent = content;
-  datesField.textContent = dates;
+  if (errors.length > 0) {
+    const message = errors.map((error) => error.message).join("\n");
+    errorField.textContent = message;
+  } else {
+    errorField.textContent = "";
+    nameField.textContent = name;
+    categoryField.textContent = category;
+    contentField.textContent = content;
+    const currentNote = getNoteById(noteId);
+    const updatedNote = {
+      ...currentNote,
+      name: name,
+      category: category,
+      content: content,
+    };
+    const otherNotes = actualNotesList.filter((note) => note.id !== noteId);
 
-  const currentNote = getNoteById(noteId);
-  const updatedNote = {
-    ...currentNote,
-    name: name,
-    category: category,
-    content: content,
-    dates: dates,
-  };
-  const otherNotes = actualNotesList.filter((note) => note.id !== noteId);
-
-  actualNotesList = [...otherNotes, updatedNote];
-
-  updateSummary(currentNote.category);
+    actualNotesList = [...otherNotes, updatedNote];
+    updateSummary(currentNote.category);
+    resetForm("note-form");
+    closeModal();
+  }
 };
 
 const handleArchiveNote = (rowIndex, noteId) => {
   const currentNote = getNoteById(noteId);
+
   const archivedNote = { ...currentNote, archived: true };
   const otherNotes = actualNotesList.filter((note) => note.id !== noteId);
 
   actualNotesList = [...otherNotes, archivedNote];
 
-  document.querySelector("#notes-table").deleteRow(rowIndex);
-  const tBodyArchive = document.querySelector("#archive tbody");
-  addRow(archivedNote, archiveTableActions, tBodyArchive);
+  const notesTable = document.querySelector("#notes-table");
+  notesTable.deleteRow(rowIndex);
+
+  if (notesTable.querySelector("tbody").rows.length === 0) {
+    notesTable.classList.add("hidden");
+  }
+
+  const archiveTable = document.querySelector("#archive");
+  if (archiveTable.classList.contains("hidden")) {
+    archiveTable.classList.remove("hidden");
+  }
+
+  addRow(
+    archivedNote,
+    archiveTableActions,
+    archiveTable.querySelector("tbody")
+  );
   updateSummary(currentNote.category);
 };
 
@@ -138,8 +164,18 @@ const handleUnarchiveNote = (rowIndex, noteId) => {
 
   actualNotesList = [...otherNotes, unarchivedNote];
 
-  document.querySelector("#archive").deleteRow(rowIndex);
+  const archiveTable = document.querySelector("#archive");
+  archiveTable.deleteRow(rowIndex);
+
+  if (archiveTable.querySelector("tbody").rows.length === 0) {
+    archiveTable.classList.add("hidden");
+  }
+
   const tBodyNotes = document.querySelector("#notes-table tbody");
+  if (tBodyNotes.parentElement.classList.contains("hidden")) {
+    tBodyNotes.parentElement.classList.remove("hidden");
+  }
+
   addRow(unarchivedNote, notesTableActions, tBodyNotes);
   updateSummary(currentNote.category);
 };
@@ -147,7 +183,12 @@ const handleUnarchiveNote = (rowIndex, noteId) => {
 const handleDeleteNote = (rowIndex, noteId) => {
   if (confirm("Are you sure you want to delete this record ?")) {
     const currentNote = getNoteById(noteId);
-    document.querySelector("#notes-table").deleteRow(rowIndex);
+    const notesTable = document.querySelector("#notes-table");
+    notesTable.deleteRow(rowIndex);
+
+    if (notesTable.querySelector("tbody").rows.length === 0) {
+      notesTable.classList.add("hidden");
+    }
 
     actualNotesList = actualNotesList.filter((note) => note.id !== noteId);
     updateSummary(currentNote.category);
@@ -156,7 +197,13 @@ const handleDeleteNote = (rowIndex, noteId) => {
 
 const handleDeleteArchivedNote = (rowIndex, noteId) => {
   const currentNote = getNoteById(noteId);
-  document.querySelector("#archive").deleteRow(rowIndex);
+  const archiveTable = document.querySelector("#archive");
+  archiveTable.deleteRow(rowIndex);
+
+  if (archiveTable.querySelector("tbody").rows.length === 0) {
+    archiveTable.classList.add("hidden");
+  }
+
   actualNotesList = actualNotesList.filter((note) => note.id !== noteId);
   updateSummary(currentNote.category);
 };
@@ -173,43 +220,28 @@ export const archiveTableActions = [
 ];
 
 const renderNotesTable = () => {
-  const notesContainer = document.querySelector("#notes-table-container");
+  const activeNotes = getActiveNotes();
 
-  const notesTable = createTable({
-    id: "notes-table",
-    titles: notesHeaders,
-    records: notesList,
-    caption: "My notes",
-    recordActions: notesTableActions,
-  });
+  if (activeNotes.length) {
+    const notesContainer = document.querySelector("#notes-table-container");
 
-  notesContainer.appendChild(notesTable);
-};
-
-const renderSummaryTable = () => {
-  const categories = getAllCategories();
-
-  categories.forEach((category) => {
-    const activeNotesCount = getNotesCount({
-      category: category,
-      archived: false,
+    const notesTable = createTable({
+      id: "notes-table",
+      titles: notesHeaders,
+      records: activeNotes,
+      caption: "Active notes",
+      recordActions: notesTableActions,
     });
 
-    const archivedNotesCount = getNotesCount({
-      category: category,
-      archived: true,
-    });
-
-    if (activeNotesCount || archivedNotesCount) {
-      addRowToSummary(category, activeNotesCount, archivedNotesCount);
-    }
-  });
+    notesContainer.appendChild(notesTable);
+  }
 };
 
 export {
   renderNotesTable,
-  renderSummaryTable,
   getNoteById,
+  getNotesCount,
+  getArchivedNotes,
   handleAddNote,
   handleEditNote,
 };

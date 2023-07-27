@@ -2,6 +2,7 @@ import { createIconButton } from "./createIconButton.js";
 
 const addButton = (action, row, noteId) => {
   const newCell = row.insertCell(-1);
+  newCell.style.textAlign = "center";
   const button = createIconButton(action.icon, action.name);
   button.addEventListener("click", () => action.cb(row.rowIndex, noteId));
   newCell.appendChild(button);
