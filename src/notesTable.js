@@ -16,15 +16,65 @@ const getNoteById = (noteId) => {
   return actualNotesList.find((note) => note.id === noteId);
 };
 
-const getArchivedNotes = () => {
-  return actualNotesList.filter((note) => note.archived === true);
+const getNotesCount = (filters) => {
+  const { category, archived } = filters;
+
+  return actualNotesList.filter(
+    (note) => note.category === category && note.archived === archived
+  ).length;
+};
+
+const getAllCategories = () => {
+  const categories = [];
+  const select = document.querySelector('select[name="category"]');
+  [...select.options]
+    .slice(1)
+    .forEach((option) => categories.push(option.text));
+
+  return categories;
+};
+
+const addRowToSummary = (category, activeNotesCount, archivedNotesCount) => {
+  const tBodySummary = document.querySelector("#summary tbody");
+  const newRow = tBodySummary.insertRow(-1);
+  newRow.dataset.category = category;
+  const categoryName = newRow.insertCell();
+  const activeNotes = newRow.insertCell();
+  const archivedNotes = newRow.insertCell();
+
+  categoryName.textContent = category;
+  activeNotes.textContent = activeNotesCount;
+  archivedNotes.textContent = archivedNotesCount;
+};
+
+const updateSummary = (category) => {
+  const categoryRow = document.querySelector(
+    `#summary [data-category="${category}"]`
+  );
+
+  const activeNotesCount = getNotesCount({
+    category: category,
+    archived: false,
+  });
+  const archivedNotesCount = getNotesCount({
+    category: category,
+    archived: true,
+  });
+
+  if (categoryRow) {
+    categoryRow.cells[1].textContent = activeNotesCount;
+    categoryRow.cells[2].textContent = archivedNotesCount;
+  } else {
+    addRowToSummary(category, activeNotesCount, archivedNotesCount);
+  }
 };
 
 const handleAddNote = () => {
   const newRecord = getNoteFormData();
-  actualNotesList = [...actualNotesList, newRecord];
+  actualNotesList = [...actualNotesList, { ...newRecord, archived: false }];
   const tbody = document.querySelector("#notes-table tbody");
   addRow(newRecord, notesTableActions, tbody);
+  updateSummary(newRecord.category);
   resetForm("note-form");
 };
 
@@ -46,6 +96,7 @@ const handleEditNote = (rowIndex, noteId) => {
   );
 
   const { name, category, content, dates } = getNoteFormData();
+  resetForm("note-form");
 
   nameField.textContent = name;
   categoryField.textContent = category;
@@ -64,7 +115,7 @@ const handleEditNote = (rowIndex, noteId) => {
 
   actualNotesList = [...otherNotes, updatedNote];
 
-  resetForm("note-form");
+  updateSummary(currentNote.category);
 };
 
 const handleArchiveNote = (rowIndex, noteId) => {
@@ -77,6 +128,7 @@ const handleArchiveNote = (rowIndex, noteId) => {
   document.querySelector("#notes-table").deleteRow(rowIndex);
   const tBodyArchive = document.querySelector("#archive tbody");
   addRow(archivedNote, archiveTableActions, tBodyArchive);
+  updateSummary(currentNote.category);
 };
 
 const handleUnarchiveNote = (rowIndex, noteId) => {
@@ -89,19 +141,24 @@ const handleUnarchiveNote = (rowIndex, noteId) => {
   document.querySelector("#archive").deleteRow(rowIndex);
   const tBodyNotes = document.querySelector("#notes-table tbody");
   addRow(unarchivedNote, notesTableActions, tBodyNotes);
+  updateSummary(currentNote.category);
 };
 
 const handleDeleteNote = (rowIndex, noteId) => {
   if (confirm("Are you sure you want to delete this record ?")) {
+    const currentNote = getNoteById(noteId);
     document.querySelector("#notes-table").deleteRow(rowIndex);
 
     actualNotesList = actualNotesList.filter((note) => note.id !== noteId);
+    updateSummary(currentNote.category);
   }
 };
 
 const handleDeleteArchivedNote = (rowIndex, noteId) => {
+  const currentNote = getNoteById(noteId);
   document.querySelector("#archive").deleteRow(rowIndex);
   actualNotesList = actualNotesList.filter((note) => note.id !== noteId);
+  updateSummary(currentNote.category);
 };
 
 const notesTableActions = [
@@ -129,4 +186,30 @@ const renderNotesTable = () => {
   notesContainer.appendChild(notesTable);
 };
 
-export { renderNotesTable, getNoteById, handleAddNote, handleEditNote };
+const renderSummaryTable = () => {
+  const categories = getAllCategories();
+
+  categories.forEach((category) => {
+    const activeNotesCount = getNotesCount({
+      category: category,
+      archived: false,
+    });
+
+    const archivedNotesCount = getNotesCount({
+      category: category,
+      archived: true,
+    });
+
+    if (activeNotesCount || archivedNotesCount) {
+      addRowToSummary(category, activeNotesCount, archivedNotesCount);
+    }
+  });
+};
+
+export {
+  renderNotesTable,
+  renderSummaryTable,
+  getNoteById,
+  handleAddNote,
+  handleEditNote,
+};

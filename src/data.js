@@ -7,6 +7,7 @@ export const notesList = [
     category: "Task",
     content: "tomatoes, bread, eggs",
     dates: "",
+    archived: false,
   },
   {
     id: "1",
@@ -15,6 +16,7 @@ export const notesList = [
     category: "Random Thought",
     content: "Worth reading",
     dates: "",
+    archived: false,
   },
   {
     id: "2",
@@ -24,6 +26,7 @@ export const notesList = [
     content:
       "I’m gonna have a dentist appointment on the 5/10/2021, I moved it from 5/12/2021",
     dates: "5/10/2021, 5/12/2021",
+    archived: false,
   },
   {
     id: "3",
@@ -32,6 +35,7 @@ export const notesList = [
     category: "Task",
     content: "Return three books to the library",
     dates: "",
+    archived: false,
   },
   {
     id: "4",
@@ -40,6 +44,7 @@ export const notesList = [
     category: "Task",
     content: "Should be ready by 6/1/2021",
     dates: "6/1/2021",
+    archived: false,
   },
   {
     id: "5",
@@ -48,6 +53,7 @@ export const notesList = [
     category: "Idea",
     content: "Try it out on my pet project",
     dates: "",
+    archived: false,
   },
   {
     id: "6",
@@ -56,5 +62,6 @@ export const notesList = [
     category: "Task",
     content: "Refactor code",
     dates: "",
+    archived: false,
   },
 ];
