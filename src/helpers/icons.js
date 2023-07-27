@@ -12,5 +12,6 @@ const createIcon = (iconClass) => {
 const editIcon = createIcon("fa-solid fa-pen");
 const archiveIcon = createIcon("fa-solid fa-file-zipper");
 const deleteIcon = createIcon("fa-solid fa-trash");
+const unarchiveIcon = createIcon("fa-solid fa-file-arrow-up");
 
-export { editIcon, archiveIcon, deleteIcon };
+export { editIcon, archiveIcon, deleteIcon, unarchiveIcon };

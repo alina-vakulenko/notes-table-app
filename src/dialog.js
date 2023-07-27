@@ -1,13 +1,13 @@
-import { addRow } from "./helpers/addRow.js";
 import { getFormattedDate } from "./helpers/getFormattedDate.js";
-import { resetForm } from "./helpers/resetForm.js";
-import { recordActions } from "./notesTable.js";
+import { parseDates } from "./helpers/parseDates.js";
+import { getNoteById, handleAddNote, handleEditNote } from "./notesTable.js";
 
 const dialog = document.querySelector("dialog");
 const closeBtn = document.querySelector("#btn-close-modal");
 const submitBtn = document.querySelector("#btn-submit");
 
-let currentRow;
+let currentRowIndex;
+let currentNoteId;
 
 const getEditableFormFields = () => {
   const formElements = document.querySelector("#note-form").elements;
@@ -19,25 +19,6 @@ const getEditableFormFields = () => {
   return { nameInput, selectedCategory, contentInput, datesInput };
 };
 
-const parseDates = (str) => {
-  const dateRegex = /\b(\d{1,2})\/(\d{1,2})\/(\d{4})\b/g;
-  const dates = [];
-
-  let match;
-  while ((match = dateRegex.exec(str)) !== null) {
-    const [fullMatch, month, day, year] = match;
-    const dateObject = new Date(`${year}-${month}-${day}`);
-    dates.push(
-      getFormattedDate(dateObject, {
-        month: "numeric",
-        day: "numeric",
-        year: "numeric",
-      })
-    );
-  }
-
-  return dates.join(", ");
-};
 const getNoteFormData = () => {
   const data = {};
 
@@ -50,52 +31,25 @@ const getNoteFormData = () => {
   });
   data["category"] = selectedCategory.text;
   data["content"] = contentInput.value;
-  data["dates"] = parseDates(contentInput.value);
+  data["dates"] = parseDates(contentInput.value, {
+    month: "numeric",
+    day: "numeric",
+    year: "numeric",
+  });
 
   return data;
 };
 
-const getTableRowFields = () => {
-  const nameField = currentRow.querySelector('[data-field="name"]');
-  const categoryField = currentRow.querySelector('[data-field="category"]');
-  const contentField = currentRow.querySelector('[data-field="content"]');
-  const datesField = currentRow.querySelector('[data-field="dates"]');
-
-  return { nameField, categoryField, contentField, datesField };
-};
-
-const fillFormWithTableData = () => {
+const fillNoteEditForm = (noteId) => {
   const { nameInput, selectedCategory, contentInput, datesInput } =
     getEditableFormFields();
 
-  const { nameField, categoryField, contentField, datesField } =
-    getTableRowFields(currentRow);
+  const currentNote = getNoteById(noteId);
 
-  nameInput.value = nameField.textContent;
-  contentInput.value = contentField.textContent;
-  datesInput.value = datesField.textContent;
-  selectedCategory.text = categoryField.textContent;
-};
-
-const handleAddNote = () => {
-  const newRecord = getNoteFormData();
-  const tbody = document.querySelector("#notes-table tbody");
-  addRow(newRecord, recordActions, tbody);
-  resetForm("note-form");
-};
-
-const handleEditNote = () => {
-  const { nameField, categoryField, contentField, datesField } =
-    getTableRowFields(currentRow);
-
-  const { name, category, content, dates } = getNoteFormData();
-
-  nameField.textContent = name;
-  categoryField.textContent = category;
-  contentField.textContent = content;
-  datesField.textContent = dates;
-
-  resetForm("note-form");
+  nameInput.value = currentNote.name;
+  contentInput.value = currentNote.content;
+  datesInput.value = currentNote.dates;
+  selectedCategory.text = currentNote.category;
 };
 
 const openCreateModal = () => {
@@ -103,9 +57,10 @@ const openCreateModal = () => {
   dialog.showModal();
 };
 
-const openEditModal = (row) => {
-  currentRow = row;
-  fillFormWithTableData();
+const openEditModal = (rowIndex, noteId) => {
+  currentRowIndex = rowIndex;
+  currentNoteId = noteId;
+  fillNoteEditForm(noteId);
   submitBtn.textContent = "Save";
   dialog.showModal();
 };
@@ -114,7 +69,7 @@ const handleSubmit = () => {
   if (submitBtn.textContent === "Add Note") {
     handleAddNote();
   } else {
-    handleEditNote();
+    handleEditNote(currentRowIndex, currentNoteId);
   }
 };
 
@@ -138,4 +93,4 @@ submitBtn.addEventListener("click", handleSubmit);
 closeBtn.addEventListener("click", closeModal);
 dialog.addEventListener("click", handleClickOutside);
 
-export { openCreateModal, openEditModal };
+export { openCreateModal, openEditModal, getNoteFormData };

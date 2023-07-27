@@ -9,14 +9,14 @@
   flex-direction: column;
   align-items: center;
   min-height: 100vh;
-  width: min(1000px, 100%-0.5rem);
+  width: 100%-2rem;
   margin: 0.5rem;
 }
 
 table {
   border-collapse: separate;
   border-spacing: 1px 5px;
-  overflow-x: auto;
+  width: 100%;
 }
 
 caption {
@@ -32,6 +32,10 @@ th {
 }
 
 th {
+  text-align: center;
+}
+
+th {
   background-color: #999999;
   color: #fff;
 }
@@ -43,10 +47,15 @@ tr {
 .btn-action {
   border: none;
   background: none;
+  color: #999999;
+}
+
+.btn-action:hover {
+  color: #777777;
 }
 
 .btn-add-note {
-  text-align: end;
+  margin-top: 20px;
 }
 
 dialog {

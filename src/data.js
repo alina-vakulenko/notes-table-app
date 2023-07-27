@@ -1,6 +1,7 @@
 export const notesHeaders = ["Name", "Created", "Category", "Content", "Dates"];
 export const notesList = [
   {
+    id: "0",
     name: "Shopping list",
     created: "April 20, 2021",
     category: "Task",
@@ -8,6 +9,7 @@ export const notesList = [
     dates: "",
   },
   {
+    id: "1",
     name: "The theory of evolution",
     created: "April 27, 2021",
     category: "Random Thought",
@@ -15,6 +17,7 @@ export const notesList = [
     dates: "",
   },
   {
+    id: "2",
     name: "Appointment",
     created: "May 05, 2021",
     category: "Task",
@@ -23,6 +26,7 @@ export const notesList = [
     dates: "5/10/2021, 5/12/2021",
   },
   {
+    id: "3",
     name: "Library",
     created: "May 15, 2021",
     category: "Task",
@@ -30,6 +34,7 @@ export const notesList = [
     dates: "",
   },
   {
+    id: "4",
     name: "Order birthday cake",
     created: "May 17, 2021",
     category: "Task",
@@ -37,6 +42,7 @@ export const notesList = [
     dates: "6/1/2021",
   },
   {
+    id: "5",
     name: "New css trick",
     created: "May 20, 2021",
     category: "Idea",
@@ -44,6 +50,7 @@ export const notesList = [
     dates: "",
   },
   {
+    id: "6",
     name: "New feature",
     created: "May 25, 2021",
     category: "Task",

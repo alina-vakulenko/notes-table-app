@@ -21,14 +21,7 @@ const createTableHead = (titles, icons) => {
   return tableHead;
 };
 
-const createTable = ({
-  id,
-  titles,
-  records,
-  caption,
-  recordActions,
-  icons,
-}) => {
+const createTable = ({ id, titles, records, caption, recordActions }) => {
   const table = document.createElement("table");
 
   if (id) {
@@ -40,6 +33,7 @@ const createTable = ({
     tableCaption.textContent = caption;
   }
 
+  const icons = recordActions.map((obj) => obj.icon);
   const tableHead = createTableHead(titles, icons);
   table.appendChild(tableHead);
 

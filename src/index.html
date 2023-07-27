@@ -27,6 +27,36 @@
         <button id="btn-add-note" class="btn btn-dark btn-add-note">
           Add note
         </button>
+        <table id="archive">
+          <caption>
+            Archived notes
+          </caption>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Created</th>
+              <th>Category</th>
+              <th>Content</th>
+              <th>Dates</th>
+              <th><i class="fa-solid fa-file-arrow-up"></i></th>
+              <th><i class="fa-solid fa-trash"></i></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <table id="summary">
+          <caption>
+            Summary
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Note Category</th>
+              <th scope="col">Active</th>
+              <th scope="col">Archived</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
         <dialog>
           <button
             id="btn-close-modal"
